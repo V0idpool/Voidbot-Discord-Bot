@@ -1,7 +1,7 @@
 [!Voidbot Discord Bot README!]
 
 If you have questions reach out to me directly via Discord, my username is: voidpool1
-
+Direct Link to my Discord: https://discordapp.com/users/152639779584999434
 
 You will need multiple API's, they are listed below and links are included to make accounts to get your keys.
 
