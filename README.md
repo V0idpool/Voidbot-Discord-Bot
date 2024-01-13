@@ -1,10 +1,9 @@
-README Currently being drafted. If you have questions reach out to me directly 
+[!Voidbot Discord Bot README!]
 
-via Discord, my username is: voidpool1
+If you have questions reach out to me directly via Discord, my username is: voidpool1
 
-Voidbot-Discord-Bot README
 
-You will need multiple API Keys, they are listed below and links are included to make accounts to get your keys.
+You will need multiple API's, they are listed below and links are included to make accounts to get your keys.
 
 ChatGPT API: https://platform.openai.com/api-keys 
 Create an account, Choose API Keys menu option on the far left. 
@@ -43,7 +42,7 @@ run all the commands needed.
 Scroll to the bottom of this same page, and you will see a GENERATED URL at the bottom. COPY this and paste 
 into your browser and it will invite the bot to your server to join. 
 
-More documentation being added on usage ASAP
+Command Documentation is located here: https://github.com/V0idpool/Voidbot-Discord-Bot/blob/main/COMMANDS.txt
 
 If you like what I do, and would like to support me please consider donating.
 BuyMeACoffee: https://www.buymeacoffee.com/voidpool or CashApp Donations: https://cash.app/$KenM1337/
