@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
@@ -635,68 +635,66 @@ class Program
             }
         } 
         if (message.Content.ToLower().StartsWith("/live") && message.Author is SocketGuildUser authlive)
-        {
-            // Check if the author has the "Administrator" permission
+{
+    // Check if the author has the "Administrator" permission
        
-            string userfile2 = @"\UserCFG.ini";
-            string roleString = UserSettings(startupPath + userfile2, "ModeratorRole");
-            string role2String = UserSettings(startupPath + userfile2, "StreamerRole");
+    string userfile2 = @"\UserCFG.ini";
+    string roleString = UserSettings(startupPath + userfile2, "ModeratorRole");
+    string role2String = UserSettings(startupPath + userfile2, "StreamerRole");
 
-            if (ulong.TryParse(roleString, out ulong modrole) && ulong.TryParse(role2String, out ulong streamerrole))
+    if (ulong.TryParse(roleString, out ulong modrole) && ulong.TryParse(role2String, out ulong streamerrole))
+    {
+        if (authlive.GuildPermissions.Administrator || (authlive.Roles.Any(r => r.Id == modrole) || (authlive.Roles.Any(r => r.Id == streamerrole))))
+        {
+            // Split the command to get the Twitch username and game as arguments
+            string[] commandParts = message.Content.Split(' ');
+
+            // Check if the command has at least two parts ("/live" and the Twitch username)
+            if (commandParts.Length >= 3)
             {
+                // Get the Twitch username and game from the command
+                string twitchName = commandParts[1];
+                string gameName = string.Join(" ", commandParts.Skip(2));
 
-                if (authlive.GuildPermissions.Administrator || (authlive.Roles.Any(r => r.Id == modrole) || (authlive.Roles.Any(r => r.Id == streamerrole))))
-                {
+                // Get the current date and time
+                DateTime now = DateTime.Now;
 
-                    // Split the command to get the Twitch username as an argument
-                    string[] commandParts = message.Content.Split(' ');
+                // Get the display name of the user
+                string displayName = (message.Author as SocketGuildUser)?.DisplayName ?? message.Author.Username;
 
-                    // Check if the command has at least two parts ("/live" and the Twitch username)
-                    if (commandParts.Length >= 2)
-                    {
-                        // Get the Twitch username from the command
-                        string twitchName = commandParts[1];
+                // Format the date and time as MonthName/day/year Time: hour:minute AM/PM
+                string formattedDateTime = now.ToString("MMMM dd yyyy" + Environment.NewLine + "'Time:' h:mm tt");
 
-                        // Get the current date and time
-                        DateTime now = DateTime.Now;
+                // Delete the original command message
+                await message.DeleteAsync();
 
-                        // Get the display name of the user
-                        string displayName = (message.Author as SocketGuildUser)?.DisplayName ?? message.Author.Username;
+                // Send the echoed message to the channel
+                await message.Channel.SendMessageAsync($"@everyone {displayName} is now LIVE on Twitch TV playing {gameName}!" + Environment.NewLine +
+                                                      $"Stream Started At: {formattedDateTime}" + Environment.NewLine +
+                                                      $"https://www.twitch.tv/{twitchName}");
 
-                        // Format the date and time as MonthName/day/year Time: hour:minute AM/PM
-                        string formattedDateTime = now.ToString("MMMM dd yyyy" + Environment.NewLine + "'Time:' h:mm tt");
-
-                        // Delete the original command message
-                        await message.DeleteAsync();
-
-                        // Send the echoed message to the channel
-                        await message.Channel.SendMessageAsync($"@everyone {displayName} is now LIVE on Twitch TV!" + Environment.NewLine +
-                                                              $"Stream Started At: {formattedDateTime}" + Environment.NewLine +
-                                                              $"https://www.twitch.tv/{twitchName}");
-
-                        // Log to console
-                        Console.WriteLine("Twitch Update sent");
-                    }
-                    else
-                    {
-                        // Inform the user that they need to provide a Twitch username
-                        await message.Channel.SendMessageAsync("Please provide a Twitch username. Usage: `/live twitchname`");
-                    }
-                }
-                else
-                {
-                    // Inform the user that they don't have the necessary permission
-                    await message.Channel.SendMessageAsync("You don't have permission to use this command.");
-                }
-
+                // Log to console
+                Console.WriteLine("Twitch Update sent");
             }
             else
             {
-                Console.WriteLine("Error: Could not convert role ID from string to Ulong!");
+                // Inform the user that they need to provide a Twitch username and game name
+                await message.Channel.SendMessageAsync("Please provide a Twitch username and game name. Usage: `/live twitchname gamename`");
             }
-
-
         }
+        else
+        {
+            // Inform the user that they don't have the necessary permission
+            await message.Channel.SendMessageAsync("You don't have permission to use this command.");
+        }
+
+    }
+    else
+    {
+        Console.WriteLine("Error: Could not convert role ID from string to Ulong!");
+    }
+}
+
 
         // Add this block of code inside your HandleMessageAsync method
 
