@@ -704,7 +704,7 @@ class Program
         {
             // Check if the author has the "Administrator" permission
             string userfile2 = @"\UserCFG.ini";
-            string roleString = UserSettings(startupPath + userfile2, "AutoRole");
+            string roleString = UserSettings(startupPath + userfile2, "ModeratorRole");
             if (ulong.TryParse(roleString, out ulong xForceRole))
             {
                 var isAdmin = (message.Author as SocketGuildUser)?.GuildPermissions.Administrator ?? false;
