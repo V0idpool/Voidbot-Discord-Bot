@@ -15,6 +15,7 @@ using HtmlAgilityPack;
 using TwitchLib.Api.Helix.Models.Chat.Emotes;
 using System.Net;
 using Google.Apis.YouTube.v3.Data;
+using System.Reflection;
 class Program
 {
     private DiscordSocketClient _client;
@@ -63,6 +64,21 @@ class Program
     public async Task RunBotAsync()
     {
         Console.Title = "VoiDBot Discord Bot";
+        // Check if the file exists
+        // Get the application startup path
+       
+
+        // Specify the filename
+        string fileName = "UserCFG.ini";
+
+        // Combine the path and filename
+        string filePath = Path.Combine(startupPath, fileName);
+        if (!File.Exists(filePath))
+        {
+            // File doesn't exist, extract from embedded resource and create it
+            ExtractResourceToFile("Botv1.UserCFG.ini", filePath);
+            
+        }
         var socketConfig = new DiscordSocketConfig
         {
             GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.GuildPresences | GatewayIntents.MessageContent
@@ -844,7 +860,7 @@ class Program
 
         // Add more commands as needed
     };
-        ulong GuildID = 0000000000000000000;
+        ulong GuildID = 745824494035271750;
         // Register each command with the guild
         foreach (var command in commands)
         {
@@ -855,7 +871,33 @@ class Program
         Console.WriteLine("Slash commands registered.");
     }
 
+    static void ExtractResourceToFile(string resourceName, string filePath)
+    {
+        try
+        {
+            // Get the embedded resource stream
+            using (Stream resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            {
+                if (resourceStream == null)
+                {
+                    Console.WriteLine($"Error: Resource '{resourceName}' not found.");
+                    return;
+                }
 
+                // Copy the content from the resource stream to the file
+                using (FileStream fileStream = File.Create(filePath))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+
+                Console.WriteLine($"Config File Not found, creating file: '{resourceName}' extracted to '{filePath}'.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error extracting resource to file: {ex.Message}");
+        }
+    }
     private async Task UserJoined(SocketGuildUser user)
     {
         // Get all channels in the server
