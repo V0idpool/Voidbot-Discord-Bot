@@ -4,7 +4,7 @@ via Discord, my username is: voidpool1
 
 Voidbot-Discord-Bot README
 
-You will need multiple API's, they are listed below and links are included to make accounts to get your keys.
+You will need multiple API Keys, they are listed below and links are included to make accounts to get your keys.
 
 ChatGPT API: https://platform.openai.com/api-keys 
 Create an account, Choose API Keys menu option on the far left. 
