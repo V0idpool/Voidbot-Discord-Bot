@@ -1,6 +1,6 @@
 [!Voidbot Discord Bot README!]
 
-![Screenshot 2024-01-14 204225](https://github.com/V0idpool/Voidbot-Discord-Bot/assets/155442279/0b6217df-eeaa-4706-86f5-d5f96870b886)
+![Screenshot 2024-01-14 204602](https://github.com/V0idpool/Voidbot-Discord-Bot/assets/155442279/4abe30e9-c932-4ab7-8f56-ad8a1a1f2526)
 
 If you have questions reach out to me directly via Discord, my username is: voidpool1
 Direct Link to my Discord: https://discordapp.com/users/152639779584999434
