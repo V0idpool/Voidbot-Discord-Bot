@@ -96,9 +96,40 @@ class Program
         await Task.Delay(-1);
     }
 
-    private Task Log(LogMessage arg)
-    {
-        Console.WriteLine(arg);
+   private async Task Log(LogMessage arg)
+        {
+            // Append the log message to the file
+            string logText = $"{DateTime.Now} [{arg.Severity}] {arg.Source}: {arg.Exception?.ToString() ?? arg.Message}";
+
+            // Log to the console
+            Console.WriteLine(logText);
+       
+            // Save to the file
+            string filePath = Path.Combine(startupPath, "Bot_logs.txt");
+
+            try
+            {
+                // Check if the file exists, and create it if it doesn't
+                if (!File.Exists(filePath))
+                {
+                    using (StreamWriter sw = File.CreateText(filePath))
+                    {
+                        await sw.WriteLineAsync(logText);
+                    }
+                }
+                else
+                {
+                    // Append the log text to the existing file
+                    using (StreamWriter sw = File.AppendText(filePath))
+                    {
+                        await sw.WriteLineAsync(logText);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error writing to log file: {ex.Message}");
+            }
         return Task.CompletedTask;
     }
 
