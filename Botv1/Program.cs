@@ -833,8 +833,9 @@ class Program
 
     }
     private async Task RegisterSlashCommands()
-    {
-        var commands = new List<SlashCommandBuilder>
+        {
+            // Register your slash commands (Not required, easier for users as typing a / will show them all available commands on the server instead of having to type /help)
+            var commands = new List<SlashCommandBuilder>
     {
         // Your existing commands here
 
@@ -858,19 +859,25 @@ class Program
                 .WithDescription("The question you want to ask")
                 .WithType(ApplicationCommandOptionType.String)),
 
-        // Add more commands as needed
-    };
-        ulong GuildID = 745824494035271750;
-        // Register each command with the guild
-        foreach (var command in commands)
-        {
-            var builtCommand = command.Build();
-            await _client.Rest.CreateGuildCommand(builtCommand, GuildID); // Replace YourGuildId with your actual guild ID
+               // Add more commands as needed
+};
+            string userfile2 = @"\UserCFG.ini";
+
+            string GuildID = UserSettings(startupPath + userfile2, "ServerID"); //Your Server ID
+
+
+            if (ulong.TryParse(GuildID, out ulong ServerId))
+            {
+
+                foreach (var command in commands)
+                {
+                    var builtCommand = command.Build();
+                    await _client.Rest.CreateGuildCommand(builtCommand, ServerId); // Replace YourGuildId with your actual guild ID
+                }
+
+                Console.WriteLine("Slash commands registered.");
+            }
         }
-
-        Console.WriteLine("Slash commands registered.");
-    }
-
     static void ExtractResourceToFile(string resourceName, string filePath)
     {
         try
