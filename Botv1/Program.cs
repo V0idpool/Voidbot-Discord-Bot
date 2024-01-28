@@ -30,7 +30,6 @@ class Program
     public async Task Mainrun()
     {
         // Load user settings from the INI file
-
         string userfile = @"\UserCFG.ini";
         GptApiKey = UserSettings(startupPath + userfile, "GptApiKey");
         DiscordBotToken = UserSettings(startupPath + userfile, "DiscordBotToken");
@@ -43,9 +42,8 @@ class Program
             Console.WriteLine("Error: API did not get SocketConnection. Are your API Keys correct? Exiting thread.");
             return;
         }
-
-
     }
+    
     public string UserSettings(string File, string Identifier) // User Settings handler
     {
         using var S = new System.IO.StreamReader(File);
@@ -59,8 +57,8 @@ class Program
             }
         }
         return Result;
-
     }
+    
     public async Task RunBotAsync()
     {
         Console.Title = "VoiDBot Discord Bot";
@@ -83,14 +81,12 @@ class Program
         await _client.StartAsync();
         await Task.Delay(-1);
     }
+    
    private async Task Log(LogMessage arg)
         {
-           
             string logText = $"{DateTime.Now} [{arg.Severity}] {arg.Source}: {arg.Exception?.ToString() ?? arg.Message}";
-
             // This can be used to SetOut Console to a file btw :P
             Console.WriteLine(logText);
-
             string filePath = Path.Combine(startupPath, "Bot_logs.txt");
             try
             {
@@ -119,18 +115,17 @@ class Program
 
     private async Task HandleMessageAsync(SocketMessage arg)
     {
-
         var message = arg as SocketUserMessage;
         if (message == null || message.Author == null || message.Author.IsBot)
         {
             return;
         }
-
+        
         Console.WriteLine($"Received message: {message.Content}");
         int argPos = 0;
         string userfile = @"\UserCFG.ini";
         string botNickname = UserSettings(startupPath + userfile, "BotNickname");
-
+        
         if (message.MentionedUsers.Any(user => user.Id == _client.CurrentUser.Id) || message.Content.Contains(botNickname, StringComparison.OrdinalIgnoreCase) || message.Content.ToLower().StartsWith("/ask"))
         {
             string query = message.Content.Replace(botNickname, "", StringComparison.OrdinalIgnoreCase).Trim();
@@ -142,6 +137,7 @@ class Program
             await message.Channel.SendMessageAsync(response);
             Console.WriteLine("Response sent");
         }
+        
         if (message.Content.ToLower().StartsWith("/roll"))
         {
             var result = new Random().Next(1, 7);
@@ -154,6 +150,7 @@ class Program
             await message.Channel.SendMessageAsync(embed: embed.Build());
             Console.WriteLine("Dice Roll Response sent");
         }
+        
         string[] EightBallResponses = { "Yes", "No", "Maybe", "Ask again later", "Tf do you think?", "Bitch, you might", "Possibly" };
         Random rand = new Random();
         if (message.Content.ToLower().StartsWith("/8ball"))
@@ -173,6 +170,7 @@ class Program
                 await message.Channel.SendMessageAsync("```" + "Please ask a question after `/8ball`." + "```");
             }
         }
+        
         if (message.Content.ToLower().StartsWith("/duel"))
         {
             var mentionedUsers = message.MentionedUsers;
@@ -205,9 +203,7 @@ class Program
                 await message.Channel.SendMessageAsync("Please mention a user to challenge to a duel.");
             }
         }
-
-
-
+        
         if (message.Content.ToLower().StartsWith("/help"))
         {
             var embed = new EmbedBuilder
@@ -219,6 +215,7 @@ class Program
             await message.Channel.SendMessageAsync(embed: embed.Build());
             Console.WriteLine("Help Response sent");
         }
+        
         if (message.Content.ToLower().StartsWith("/say") && message.Author is SocketGuildUser auth)
         {
             if (auth.GuildPermissions.Administrator)
@@ -233,6 +230,7 @@ class Program
                 await message.Channel.SendMessageAsync("You don't have permission to use this command.");
             }
         }
+        
         if (message.Content.ToLower().StartsWith("/kick") && message.Author is SocketGuildUser author)
         {
             if (author.GuildPermissions.KickMembers)
@@ -257,6 +255,7 @@ class Program
                 await message.Channel.SendMessageAsync("You don't have permission to kick members.");
             }
         }
+        
         if (message.Content.ToLower().StartsWith("/coinflip"))
         {
             var result = new Random().Next(2);
@@ -272,9 +271,9 @@ class Program
             await message.Channel.SendMessageAsync(embed: embed.Build());
             Console.WriteLine("Coin flip Response sent");
         }
+        
         if (message.Content.ToLower().StartsWith("/lfg"))
         {
-
             var match = Regex.Match(message.Content, @"\(([^)]*)\) (\d+)");
             if (match.Success)
             {
@@ -289,10 +288,8 @@ class Program
                         Description = $"Game: {userDefinedGameName}\nPlayers Needed: {userDefinedPlayersNeeded}\n{message.Author.Mention}" + " is looking for someone to party up!" + Environment.NewLine + "React to this message if you want to play!",
                         Color = Color.DarkRed
                     };
-                    
                     await message.DeleteAsync();
                     var lfgMessage = await message.Channel.SendMessageAsync(embed: embed.Build());
-
                     await lfgMessage.AddReactionAsync(new Emoji("👍"));
                     Console.WriteLine("Looking For Group Response sent");
                 }
@@ -323,28 +320,22 @@ class Program
                     // Parse
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(htmlContent);
-                    
+        
                     // Get Pokemon Types
                     var typesNodes = doc.DocumentNode.SelectNodes("//th[contains(text(), 'Type')]/following-sibling::td//a");
                     string pokemonTypes = string.Join(", ", typesNodes?.Select(node => node.InnerText));
-
                     // Get Pokemon Capture Rate
                     var captureRateNode = doc.DocumentNode.SelectSingleNode("//th[contains(text(), 'Catch rate')]/following-sibling::td");
                     string captureRate = captureRateNode?.InnerText.Trim() ?? "N/A";
-
                     // Get Pokemon Base Stats
                     var baseStatsNodes = doc.DocumentNode.SelectNodes("//th[contains(text(), 'Base stats')]/following-sibling::td//td[@class='cell-num']");
                     string baseStats = baseStatsNodes != null ? string.Join(", ", baseStatsNodes.Select(node => node.InnerText)) : "N/A";
-                    
                     // Get Pokemon Species
                     var speciesNode = doc.DocumentNode.SelectSingleNode("//th[contains(text(), 'Species')]/following-sibling::td");
-                    string species = speciesNode?.InnerText.Trim() ?? "N/A";
-                    
+                    string species = speciesNode?.InnerText.Trim() ?? "N/A";           
                     // Get National Pokédex number
                     var nationalDexNode = doc.DocumentNode.SelectSingleNode("//th[text()='National №']/following-sibling::td");
                     string nationalDexNumber = nationalDexNode?.InnerText.Trim() ?? "N/A";
-
-
 
                     // Possible image classes in descending order of preference
                     string[] imageClasses = { "img-fixed img-sprite-v21", "img-fixed img-sprite-v8", "img-fixed img-sprite-v3" };
@@ -358,11 +349,9 @@ class Program
                             break;
                         }
                     }
-
                     // Extract height from the HTML
                     var heightNode = doc.DocumentNode.SelectSingleNode("//th[contains(text(), 'Height')]/following-sibling::td");
                     string height = WebUtility.HtmlDecode(heightNode?.InnerText ?? string.Empty);
-                    
                     // Extract weight from the HTML
                     var weightNode = doc.DocumentNode.SelectSingleNode("//th[contains(text(), 'Weight')]/following-sibling::td");
                     string weight = WebUtility.HtmlDecode(weightNode?.InnerText ?? string.Empty);
@@ -381,8 +370,7 @@ class Program
                     embed.AddField("Types", pokemonTypes);
                     embed.AddField("Height", height);
                     embed.AddField("Weight", weight);
-                    
-                    // Add image URL to the embed
+
                     if (!string.IsNullOrEmpty(imageUrl))
                     {
                         embed.ImageUrl = imageUrl;
@@ -407,10 +395,8 @@ class Program
             string permaInviteUrl = UserSettings(startupPath + userfile2, "InviteLink"); // Invite link for intro message
             // Delete the original command message
             await message.DeleteAsync();
-
             string roleString = UserSettings(startupPath + userfile2, "ModeratorRole");
             string role2String = UserSettings(startupPath + userfile2, "StreamerRole");
-
             if (ulong.TryParse(roleString, out ulong modrole))
             {
                 if (authorlive.GuildPermissions.Administrator || (authorlive.Roles.Any(r => r.Id == modrole)))
@@ -421,7 +407,7 @@ class Program
                     string mods = "https://cdn-longterm.mee6.xyz/plugins/welcome_message/banners/1161640178218049536/mods.png";
                     string invitelink = "https://cdn-longterm.mee6.xyz/plugins/welcome_message/banners/1161640178218049536/invite_link.png";
                     string servername = authorlive.Guild.Name;
-
+                    
                     var embedWelcome = new EmbedBuilder
                     {
                         Title = $"Welcome to {servername}",
@@ -441,6 +427,7 @@ class Program
                         Description = "Check out our social links below, Like, Follow, and Subscribe! Roles given out based on supporter status.",
                         Color = Color.DarkRed
                     };
+                    
                     embedLinks.AddField("\u200B", "\u200B", inline: true); // Zero-width space to create a column, hackyyyy
                     embedLinks.AddField("YouTube", $"[YouTube Channel]({youtubelink})", inline: true);
                     embedLinks.AddField("Twitch", $"[Twitch Channel]({twitch})", inline: true);
@@ -448,6 +435,7 @@ class Program
                     embedLinks.AddField("Steam", $"[Steam Profile]({steam})", inline: true);
                     embedLinks.AddField("Facebook", $"[Facebook Page]({facebook})", inline: true);
                     embedLinks.AddField("\u200B", "\u200B", inline: true); // Zero-width space to create a column, hackyyyy
+                    
                     var embedMods = new EmbedBuilder
                     {
                         Description = "Our moderation team is here to make sure this cozy little corner of Discord stays warm and safe for everyone. 🍵\r\n\r\n\r\nIf you ever come across any problems related to our server, don't hesitate to tag them in the channel. ❤️\r\n\r\n\r\nQuick heads-up: The moderation team won't handle issues through DMs between members.\r\nIf you run into any trouble there, it's best to report it directly to Discord's Trust & Safety and block the user.\r\n",
@@ -498,9 +486,7 @@ class Program
             var searchListRequest = youtubeService.Search.List("snippet");
             searchListRequest.Q = query;
             searchListRequest.MaxResults = 1;
-
             var searchListResponse = await searchListRequest.ExecuteAsync();
-
             var searchResult = searchListResponse.Items.FirstOrDefault();
 
             if (searchResult != null)
@@ -553,12 +539,10 @@ class Program
             }
         } 
         if (message.Content.ToLower().StartsWith("/live") && message.Author is SocketGuildUser authlive)
-{
-       
-    string userfile2 = @"\UserCFG.ini";
-    string roleString = UserSettings(startupPath + userfile2, "ModeratorRole");
-    string role2String = UserSettings(startupPath + userfile2, "StreamerRole");
-
+        {
+               string userfile2 = @"\UserCFG.ini";
+               string roleString = UserSettings(startupPath + userfile2, "ModeratorRole");
+               string role2String = UserSettings(startupPath + userfile2, "StreamerRole");
     if (ulong.TryParse(roleString, out ulong modrole) && ulong.TryParse(role2String, out ulong streamerrole))
     {
         if (authlive.GuildPermissions.Administrator || (authlive.Roles.Any(r => r.Id == modrole) || (authlive.Roles.Any(r => r.Id == streamerrole))))
@@ -588,7 +572,6 @@ class Program
         {
             await message.Channel.SendMessageAsync("You don't have permission to use this command.");
         }
-
     }
     else
     {
@@ -607,7 +590,6 @@ class Program
                 if (isAdmin || hasSpecificRole)
                 {
                     int messagesToPurge = 100;
-                    
                     await message.DeleteAsync();
                     
                     var channel = message.Channel as SocketTextChannel;
@@ -632,7 +614,6 @@ class Program
                 Console.WriteLine("Error: Could not get ModeratorRole ID(ulong) from config file!");
             }
         }
-
 
         if (message.Content.ToLower().StartsWith("/updatemsg"))
         {
@@ -667,8 +648,6 @@ class Program
             {
                 Console.WriteLine("Error: Could not get ModeratorRole ID(ulong) from config file!");
             }
-
-            
         }
         if (message.Content.ToLower().StartsWith("/poll"))
         {
@@ -689,9 +668,6 @@ class Program
                 await message.Channel.SendMessageAsync("Invalid command format. Please use /poll <question>");
             }
         }
-
-
-
     }
     private async Task RegisterSlashCommands()
         {
@@ -717,25 +693,21 @@ class Program
                 .WithDescription("The question you want to ask")
                 .WithType(ApplicationCommandOptionType.String)),
 
-               // ..... More commands
+               // More commands
 };
             string userfile2 = @"\UserCFG.ini";
-
             string GuildID = UserSettings(startupPath + userfile2, "ServerID"); //Your Server ID
-
-
             if (ulong.TryParse(GuildID, out ulong ServerId))
             {
-
                 foreach (var command in commands)
                 {
                     var builtCommand = command.Build();
                     await _client.Rest.CreateGuildCommand(builtCommand, ServerId);
                 }
-
                 Console.WriteLine("Slash commands registered.");
             }
         }
+    
     static void ExtractResourceToFile(string resourceName, string filePath)
     {
         try
@@ -759,6 +731,7 @@ class Program
             Console.WriteLine($"Error extracting resource to file: {ex.Message}");
         }
     }
+    
     private async Task UserJoined(SocketGuildUser user)
     {
         var channels = user.Guild.Channels;
@@ -780,34 +753,15 @@ class Program
         await mainChannel.SendMessageAsync($"HEYO! Welcome to the server {user.Mention}! Be sure to read the Rules in the " + rules.Mention + " !");
         Console.WriteLine("Welcome message sent");
     }
-
-    // Check if the user's ID matches the one you want to kick, just for the lawls AKA (The shit list)
-    //ulong userIdToKick = USERID;
-    //if (user.Id == userIdToKick)
-    //{
-    // 
-    //    var channels = user.Guild.Channels;
-    //   
-    //    var targetChannel = channels.FirstOrDefault(c => c is ITextChannel) as ITextChannel;
-    //    if (targetChannel != null)
-    //    {
-    //
-    //        await user.KickAsync("Auto-kicked based on user ID.");
-    //
-    //        await targetChannel.SendMessageAsync($"User {user.Username}#{user.Discriminator} ({user.Id}) was auto-kicked. BE GONE VILE MAN, BE GONE WITH YOU! :)");
-    //        Console.WriteLine($"User {user.Username}#{user.Discriminator} ({user.Id}) auto-kicked based on user ID.");
-    //    }
-    //}
-    //}
-
+    
     private int RollDice()
     {
 
         return new Random().Next(1, 7);
     }
+    
     public async Task<string> GetOpenAiResponse(string query)
     {
-
         using (HttpClient client = new HttpClient())
         {
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {GptApiKey}");
@@ -822,7 +776,6 @@ class Program
             // Create a JSON object for the request payload, change model as OpenAI updates
             var requestBody = new
             {
-
                 model = "gpt-3.5-turbo",
                 messages = messages,
                 max_tokens = 200
@@ -852,9 +805,5 @@ class Program
                 return "Error communicating with OpenAI API.";
             }
         }
-
-
     }
-
-
 }
